@@ -16,7 +16,7 @@ const patientSchema = new mongoose.Schema({
     maxLength: 50,
   },
   dateOfBirth: {
-    type: Number,
+    type: Date,
     required: true,
   },
   gender: {
@@ -27,28 +27,36 @@ const patientSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    validate: {
+      validator: validator.isEmail,
+      message: "Invalid Email",
+    },
   },
   password: {
     type: String,
     required: true,
+    minLength: 8,
   },
   bloodType: {
     type: String,
+    default: "",
   },
   profilePicture: {
     type: String,
+    default: "",
   },
   address: {
     type: String,
+    default: "",
   },
   pictures: {
     type: [String],
+    default: [],
   },
   medicalRecord: {
     type: String,
+    default: "",
   },
-
   bookings: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -57,13 +65,22 @@ const patientSchema = new mongoose.Schema({
   ],
 });
 
-patientSchema.statics.signup = async function (email, password) {
+patientSchema.statics.signup = async function (
+  name,
+  lastName,
+  dateOfBirth,
+  email,
+  password,
+  gender
+) {
+  console.log("Received email:", email); // Debug log
+
   const exists = await this.findOne({ email });
   if (exists) {
     throw Error("Email already in use");
   }
 
-  if (!email || !password) {
+  if (!email || !password || !name || !lastName || !dateOfBirth || !gender) {
     throw Error("All fields must be filled in");
   }
 
@@ -73,35 +90,21 @@ patientSchema.statics.signup = async function (email, password) {
 
   if (!validator.isStrongPassword(password)) {
     throw Error(
-      "Make sure to use at least 8 characters, 1 uppercase, 1 lowercase and a symbol."
+      "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, and a symbol."
     );
   }
 
   const salt = await bcrypt.genSalt(10);
-
   const hash = await bcrypt.hash(password, salt);
 
-  const patient = await this.create({ email, password: hash });
-
-  return patient;
-};
-
-patientSchema.statics.login = async function (email, password) {
-  if (!email || !password) {
-    throw Error("All fields must be filled in");
-  }
-
-  const patient = await this.findOne({ email });
-
-  if (!patient) {
-    throw Error("Patient does not exit or incorrect password");
-  }
-
-  const match = await bcrypt.compare(password, patient.password);
-
-  if (!match) {
-    throw Error("Incorrect password");
-  }
+  const patient = await this.create({
+    name,
+    lastName,
+    dateOfBirth,
+    email,
+    password: hash,
+    gender,
+  });
 
   return patient;
 };

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const doctorSchema = new mongoose.Schema({
   name: {
@@ -25,34 +27,17 @@ const doctorSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
-    match: [],
+    unique: true, // Ensure email is unique
+    validate: {
+      validator: validator.isEmail,
+      message: "Invalid Email",
+    },
   },
   password: {
     type: String,
     required: true,
+    minLength: 8,
   },
-
-  profilePicture: {
-    type: String,
-  },
-  address: {
-    type: String,
-  },
-  files: {
-    type: [String],
-    required: true,
-  },
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
   registrationNumber: {
     type: String,
     required: true,
@@ -65,26 +50,40 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  reviews: [
-    {
-      patient: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Patient",
-      },
-      feedback: {
-        type: String,
-      },
-    },
-  ],
+  files: {
+    type: [String],
+    default: [],
+  },
 });
 
-doctorSchema.statics.signup = async function (email, password) {
+doctorSchema.statics.signup = async function (
+  name,
+  lastName,
+  dateOfBirth,
+  email,
+  password,
+  gender,
+  registrationNumber,
+  yearsOfExperience,
+  specialization,
+  files
+) {
   const exists = await this.findOne({ email });
   if (exists) {
     throw Error("Email already in use");
   }
 
-  if (!email || !password) {
+  if (
+    !email ||
+    !password ||
+    !name ||
+    !lastName ||
+    !dateOfBirth ||
+    !gender ||
+    !registrationNumber ||
+    !yearsOfExperience ||
+    !specialization
+  ) {
     throw Error("All fields must be filled in");
   }
 
@@ -94,15 +93,25 @@ doctorSchema.statics.signup = async function (email, password) {
 
   if (!validator.isStrongPassword(password)) {
     throw Error(
-      "Make sure to use at least 8 characters, 1 uppercase, 1 lowercase and a symbol."
+      "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, and a symbol."
     );
   }
 
   const salt = await bcrypt.genSalt(10);
-
   const hash = await bcrypt.hash(password, salt);
 
-  const doctor = await this.create({ email, password: hash });
+  const doctor = await this.create({
+    name,
+    lastName,
+    dateOfBirth,
+    email,
+    password: hash,
+    gender,
+    registrationNumber,
+    yearsOfExperience,
+    specialization,
+    files,
+  });
 
   return doctor;
 };

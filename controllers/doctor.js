@@ -9,9 +9,7 @@ const loginDoctor = async (req, res) => {
   const { email, password } = req.body;
   try {
     const doctor = await Doctor.login(email, password);
-
     const token = createToken(doctor._id, doctor.email);
-
     res.status(200).json({ email, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -31,6 +29,7 @@ const signupDoctor = async (req, res) => {
     specialization,
     files,
   } = req.body;
+
   try {
     const doctor = await Doctor.signup(
       name,

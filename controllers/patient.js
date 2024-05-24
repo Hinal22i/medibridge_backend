@@ -9,9 +9,7 @@ const loginPatient = async (req, res) => {
   const { email, password } = req.body;
   try {
     const patient = await Patient.login(email, password);
-
     const token = createToken(patient._id, patient.email);
-
     res.status(200).json({ email, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -20,6 +18,8 @@ const loginPatient = async (req, res) => {
 
 const signupPatient = async (req, res) => {
   const { name, lastName, dateOfBirth, email, password, gender } = req.body;
+  console.log("Signup request body:", req.body); // Debug log
+
   try {
     const patient = await Patient.signup(
       name,
@@ -29,7 +29,6 @@ const signupPatient = async (req, res) => {
       password,
       gender
     );
-
     const token = createToken(patient._id, patient.email);
     res.status(200).json({ email, token });
   } catch (error) {
