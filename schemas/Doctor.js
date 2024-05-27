@@ -38,22 +38,60 @@ const doctorSchema = new mongoose.Schema({
     required: true,
     minLength: 8,
   },
+  phone: {
+    type: Number,
+  },
   registrationNumber: {
     type: String,
     required: true,
   },
-  yearsOfExperience: {
-    type: Number,
-    required: true,
+  education: {
+    type: [String],
   },
   specialization: {
     type: String,
     required: true,
   },
+  experiences: {
+    type: [String],
+  },
+  about: {
+    type: String,
+  },
   files: {
     type: [String],
     default: [],
+    required: true,
   },
+  // fields to be discussed
+  // timeSlots: {
+  //   type: Array,
+  // },
+  // reviews: [
+  //   {
+  //     type: mongoose.Types.ObjectId,
+  //     ref: "Review",
+  //   },
+  // ],
+  // averageRating: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // totalRating: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // meetingStatus: {
+  //   type: String,
+  //   enum: ["pending", "approved", "cancelled"],
+  //   default: "pending",
+  // },
+  // appointments: [
+  //   {
+  //     type: mongoose.Types.ObjectId,
+  //     ref: "Appointment",
+  //   },
+  // ],
 });
 
 doctorSchema.statics.signup = async function (
@@ -64,7 +102,6 @@ doctorSchema.statics.signup = async function (
   password,
   gender,
   registrationNumber,
-  yearsOfExperience,
   specialization,
   files
 ) {
@@ -81,8 +118,8 @@ doctorSchema.statics.signup = async function (
     !dateOfBirth ||
     !gender ||
     !registrationNumber ||
-    !yearsOfExperience ||
-    !specialization
+    !specialization ||
+    !files
   ) {
     throw Error("All fields must be filled in");
   }
@@ -108,7 +145,6 @@ doctorSchema.statics.signup = async function (
     password: hash,
     gender,
     registrationNumber,
-    yearsOfExperience,
     specialization,
     files,
   });

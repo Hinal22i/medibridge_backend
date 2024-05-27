@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Patient = require("../schemas/Doctor");
+const Doctor = require("../schemas/Doctor");
 
 const doctorAuth = async (req, res, next) => {
   const { authorization } = req.headers;

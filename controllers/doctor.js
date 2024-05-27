@@ -24,8 +24,11 @@ const signupDoctor = async (req, res) => {
     email,
     password,
     gender,
+    phone,
     registrationNumber,
-    yearsOfExperience,
+    education,
+    about,
+    experiences,
     specialization,
     files,
   } = req.body;
@@ -38,8 +41,11 @@ const signupDoctor = async (req, res) => {
       email,
       password,
       gender,
+      phone,
       registrationNumber,
-      yearsOfExperience,
+      education,
+      about,
+      experiences,
       specialization,
       files
     );

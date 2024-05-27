@@ -57,10 +57,10 @@ const patientSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  bookings: [
+  appointments: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
+      ref: "Appointment",
     },
   ],
 });
@@ -105,6 +105,26 @@ patientSchema.statics.signup = async function (
     password: hash,
     gender,
   });
+
+  return patient;
+};
+
+patientSchema.statics.login = async function (email, password) {
+  if (!email || !password) {
+    throw Error("All fields must be filled in");
+  }
+
+  const patient = await this.findOne({ email });
+
+  if (!patient) {
+    throw Error("Patient does not exist or incorrect password");
+  }
+
+  const match = await bcrypt.compare(password, patient.password);
+
+  if (!match) {
+    throw Error("Incorrect password");
+  }
 
   return patient;
 };
