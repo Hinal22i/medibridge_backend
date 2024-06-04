@@ -1,10 +1,23 @@
 const express = require("express");
 
-const { loginDoctor, signupDoctor } = require("../controllers/doctor");
+const {
+  updateDoctor,
+  deleteDoctor,
+  getAllDoctors,
+  getSingleDoctor,
+} = require("../controllers/doctorController");
+const { authenticate, restrict } = require("../middleware/verifyToken");
 
-const app = express.Router();
+const review = require("./review");
 
-app.route("/signup").post(signupDoctor);
-app.route("/login").post(loginDoctor);
+const router = express.Router();
 
-module.exports = app;
+//nested route
+router.use("/:doctorId/reviews", review);
+
+router.get("/:id", getSingleDoctor);
+router.get("/", getAllDoctors);
+router.put("/:id", authenticate, restrict(["doctor"]), updateDoctor);
+router.delete("/:id", authenticate, restrict(["doctor"]), deleteDoctor);
+
+module.exports = router;
