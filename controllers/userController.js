@@ -1,4 +1,6 @@
 const User = require("../schemas/User");
+const Bookings = require("../schemas/Bookings");
+const Doctor = require("../schemas/Doctor");
 
 const updateUser = async (req, res) => {
   const { id } = req.paras;
@@ -47,4 +49,60 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { updateUser, deleteUser, getAllUsers, getSingleUser };
+const getUserProfile = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not fund" });
+    }
+
+    const { password, ...rest } = user._doc;
+
+    res.status(200).json({
+      success: true,
+      message: "Profile info is getting",
+      data: { ...rest },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Something went wrong, cannot get" });
+  }
+};
+
+const getMyAppointments = async (req, res) => {
+  try {
+    //booking from specific user
+    const bookings = await Bookings.find({ user: req.userId });
+
+    //doctors id from appointment booking
+    const doctorIds = bookings.map((element) => element.doctor.id);
+
+    //retrieve using doctors ids
+    const doctors = await Doctor.find({ _id: { $in: doctorIds } }).select(
+      "-password"
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Appointments are getting",
+      data: doctors,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Something went wrong, cannot get" });
+  }
+};
+
+module.exports = {
+  updateUser,
+  deleteUser,
+  getAllUsers,
+  getSingleUser,
+  getUserProfile,
+  getMyAppointments,
+};

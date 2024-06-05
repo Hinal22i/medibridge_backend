@@ -6,7 +6,7 @@ const DoctorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: Number },
   photo: { type: String },
-  ticketPrice: { type: Number },
+  medRegNr: { type: Number },
   role: {
     type: String,
   },
