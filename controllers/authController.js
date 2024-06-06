@@ -5,15 +5,15 @@ const bcrypt = require("bcrypt");
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, process.env.SECRET, {
-    expiresIn: "1d",
+    expiresIn: "2d",
   });
 };
 
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
   const { email, password, name, role, photo, gender } = req.body;
 
   try {
-    let user;
+    let user = null;
 
     if (role === "patient") {
       user = await User.findOne({ email });
@@ -37,7 +37,8 @@ const register = async (req, res) => {
         gender,
         role,
       });
-    } else if (role === "doctor") {
+    }
+    if (role === "doctor") {
       user = new Doctor({
         name,
         email,
@@ -64,7 +65,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user;
+    let user = null;
 
     const patient = await User.findOne({ email });
     const doctor = await Doctor.findOne({ email });
@@ -79,7 +80,10 @@ const login = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
     if (!isPasswordMatch) {
       return res
@@ -87,20 +91,20 @@ const login = async (req, res) => {
         .json({ status: false, message: "Invalid credentials" });
     }
 
+    const { password, role, appointments, ...rest } = user._doc;
+
     const token = generateToken(user);
 
-    const { password: _, ...rest } = user._doc;
-
     res.status(200).json({
-      status: true,
-      message: "Successfully logged in",
+      success: true,
+      message: "Successfully login",
       token,
-      data: rest,
-      role: user.role,
+      data: { ...rest },
+      role,
     });
   } catch (error) {
     res.status(500).json({ status: false, message: "Failed to login" });
   }
 };
 
-module.exports = { register, login };
+module.exports = { registerUser, login };

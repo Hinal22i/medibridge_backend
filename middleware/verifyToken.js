@@ -30,7 +30,7 @@ const authenticate = async (req, res, next) => {
 };
 
 const restrict = (roles) => async (req, res, next) => {
-  const userId = res.userId;
+  const userId = req.userId;
 
   let user;
 
@@ -39,19 +39,25 @@ const restrict = (roles) => async (req, res, next) => {
 
   if (patient) {
     user = patient;
-  }
-
-  if (doctor) {
+  } else if (doctor) {
     user = doctor;
+  } else {
+    return res.status(404).json({ message: "User not found" });
   }
 
   if (!roles.includes(user.role)) {
     return res
       .status(401)
-      .json({ success: false, message: "You are not authorized" });
+      .json({ success: false, message: "You're not authorized" });
   }
 
   next();
 };
 
-module.exports = { authenticate, restrict };
+const adminAuth = restrict(["admin"]);
+
+const doctorAuth = restrict(["doctor"]);
+
+const patientAuth = restrict(["patient", "admin"]);
+
+module.exports = { authenticate, restrict, adminAuth, doctorAuth, patientAuth };

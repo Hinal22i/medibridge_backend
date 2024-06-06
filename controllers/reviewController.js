@@ -4,17 +4,23 @@ const Doctor = require("../schemas/Doctor");
 const getAllReviews = async (req, res) => {
   try {
     const reviews = await Review.find({});
-    res
-      .status(200)
-      .json({ success: true, message: "Successful", data: reviews });
-  } catch (error) {
-    res.status(404).json({ success: false, message: "Not found" });
+
+    res.status(200).json({
+      success: true,
+      message: "Successful",
+      data: reviews,
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: "not found",
+    });
   }
 };
 
 const createReview = async (req, res) => {
   if (!req.body.doctor) req.body.doctor = req.params.doctorId;
-  if (!req.body.user) req.body.user = req.params.userId;
+  if (!req.body.user) req.body.user = req.userId;
 
   const newReview = new Review(req.body);
 

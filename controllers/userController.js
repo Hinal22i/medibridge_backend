@@ -3,49 +3,78 @@ const Bookings = require("../schemas/Bookings");
 const Doctor = require("../schemas/Doctor");
 
 const updateUser = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
-    const updateUser = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       id,
-      { $set: req.body },
+      {
+        $set: req.body,
+      },
       { new: true }
     );
+
     res.status(200).json({
       success: true,
       message: "Successfully updated",
-      data: updateUser,
+      data: updatedUser,
     });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to update" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "failed to update",
+    });
   }
 };
 
 const deleteUser = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
-    const updateUser = await User.findByIdAndDelete(id);
-    res.status(200).json({ success: true, message: "Successfully deleted" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to delete" });
+    await User.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully deleted",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "failed to delete",
+    });
   }
 };
 
 const getSingleUser = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
-    const user = await User.findById(id).select("-password");
-    res.status(200).json({ success: true, message: "User found", data: user });
-  } catch (error) {
-    res.status(404).json({ success: false, message: "No user found" });
+    const user = await User.findById(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Successful",
+      data: user,
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
   }
 };
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password");
-    res.status(200).json({ success: true, message: "User found", data: users });
-  } catch (error) {
-    res.status(404).json({ success: false, message: "Not found" });
+    const users = await User.find({});
+
+    res.status(200).json({
+      success: true,
+      message: "Successful",
+      data: users,
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
   }
 };
 

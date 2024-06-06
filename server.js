@@ -9,6 +9,7 @@ const user = require("./routes/user");
 const doctor = require("./routes/doctor");
 const review = require("./routes/review");
 const cookieParser = require("cookie-parser");
+const booking = require("./routes/bookings");
 const corsOptions = {
   origin: true, // For production, replace `true` with an array of allowed origins
 };
@@ -39,6 +40,7 @@ app.use("/api/auth", auth);
 app.use("/api/users", user);
 app.use("/api/doctors", doctor);
 app.use("/api/reviews", review);
+app.use("/api/bookings", booking);
 
 app.listen(PORT, () => {
   console.log(`Listening on localhost:${PORT}`.rainbow);
