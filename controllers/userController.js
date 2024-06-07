@@ -44,7 +44,8 @@ const deleteUser = async (req, res) => {
 };
 
 const getSingleUser = async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
+
   try {
     const user = await User.findById(id);
 
@@ -80,50 +81,45 @@ const getAllUsers = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   const userId = req.userId;
+  console.log("USER ID IN FUNC GET USER PROFILE: ", userId);
 
   try {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not fund" });
+      res.status(404).json({ message: "User not found" });
     }
 
     const { password, ...rest } = user._doc;
 
     res.status(200).json({
       success: true,
-      message: "Profile info is getting",
+      message: "Successfully ",
       data: { ...rest },
     });
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: "Something went wrong, cannot get" });
+      .json({ success: false, message: "Something went wrong! cannot get!" });
   }
 };
 
 const getMyAppointments = async (req, res) => {
   try {
-    //booking from specific user
     const bookings = await Bookings.find({ user: req.userId });
+    const doctorIds = bookings.map((el) => el.doctor.id);
 
-    //doctors id from appointment booking
-    const doctorIds = bookings.map((element) => element.doctor.id);
-
-    //retrieve using doctors ids
     const doctors = await Doctor.find({ _id: { $in: doctorIds } }).select(
       "-password"
     );
 
-    res.status(200).json({
-      success: true,
-      message: "Appointments are getting",
-      data: doctors,
-    });
+    res.status(200).json({ success: true, message: "Success", data: doctors });
   } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: "Something went wrong, cannot get" });
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong! cannot get!",
+    });
   }
 };
 

@@ -80,16 +80,17 @@ const getAllDoctors = async (req, res) => {
 
 const getDoctorProfile = async (req, res) => {
   const userId = req.userId;
-
+  console.log("ARE WE FETCHING THE DOC PROFILE?");
   try {
     // let user = null;
     const user = await Doctor.findById(userId);
+    console.log("This is the doc:", user);
 
     if (!user) {
       res.status(404).json({ message: "User not found" });
     }
 
-    const appointments = await Booking.find({ doctor: userId });
+    const appointments = await Bookings.find({ doctor: userId });
 
     const { password, ...rest } = user._doc;
 
