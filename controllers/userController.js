@@ -81,7 +81,6 @@ const getAllUsers = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   const userId = req.userId;
-  console.log("USER ID IN FUNC GET USER PROFILE: ", userId);
 
   try {
     const user = await User.findById(userId);
@@ -115,7 +114,6 @@ const getMyAppointments = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Success", data: doctors });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       success: false,
       message: "Something went wrong! cannot get!",

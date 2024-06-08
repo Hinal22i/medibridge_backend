@@ -31,7 +31,6 @@ const authenticate = async (req, res, next) => {
 };
 
 const restrict = (roles) => async (req, res, next) => {
-  console.log("restrict middleware function");
   const userId = req.userId;
 
   let user;
@@ -39,8 +38,6 @@ const restrict = (roles) => async (req, res, next) => {
   try {
     const patient = await User.findById(userId);
     const doctor = await Doctor.findById(userId);
-
-    console.log("doctor and patient", doctor, patient);
 
     if (patient) {
       user = patient;

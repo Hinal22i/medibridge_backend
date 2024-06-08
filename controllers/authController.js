@@ -65,7 +65,6 @@ const login = async (req, res) => {
     const user =
       (await User.findOne({ email })) || (await Doctor.findOne({ email }));
     if (!user) {
-      console.log("User not found");
       return res
         .status(400)
         .json({ success: false, message: "Invalid Credentials" });
@@ -74,7 +73,6 @@ const login = async (req, res) => {
     // Check password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      console.log("Password does not match");
       return res
         .status(400)
         .json({ success: false, message: "Invalid Credentials" });
@@ -92,7 +90,6 @@ const login = async (req, res) => {
       data: { ...rest },
     });
   } catch (error) {
-    console.error("Error during login:", error);
     res.status(500).json({ success: false, message: "Failed to login" });
   }
 };

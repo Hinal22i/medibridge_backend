@@ -38,6 +38,12 @@ const DoctorSchema = new mongoose.Schema({
     enum: ["pending", "approved", "cancelled"],
     default: "pending",
   },
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: function () {
+      return this._id ?? "";
+    },
+  },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);
