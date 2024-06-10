@@ -6,7 +6,7 @@ const DoctorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phone: { type: Number },
   photo: { type: String },
-  medRegNr: { type: Number },
+  ticketPrice: { type: Number },
   role: {
     type: String,
   },
@@ -38,7 +38,12 @@ const DoctorSchema = new mongoose.Schema({
     enum: ["pending", "approved", "cancelled"],
     default: "pending",
   },
-  appointments: [{ type: mongoose.Types.ObjectId, ref: "Appointment" }],
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: function () {
+      return this._id ?? "";
+    },
+  },
 });
 
 module.exports = mongoose.model("Doctor", DoctorSchema);

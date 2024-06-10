@@ -2,7 +2,7 @@ const Doctor = require("../schemas/Doctor");
 const Bookings = require("../schemas/Bookings");
 
 const updateDoctor = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
     const updateDoctor = await Doctor.findByIdAndUpdate(
       id,
@@ -20,17 +20,25 @@ const updateDoctor = async (req, res) => {
 };
 
 const deleteDoctor = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
+
   try {
-    const updateDoctor = await User.findByIdAndDelete(id);
-    res.status(200).json({ success: true, message: "Successfully deleted" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Failed to delete" });
+    await Doctor.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully deleted",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete",
+    });
   }
 };
 
 const getSingleDoctor = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
     const doctor = await Doctor.findById(id)
       .populate("reviews")
@@ -71,29 +79,29 @@ const getAllDoctors = async (req, res) => {
 };
 
 const getDoctorProfile = async (req, res) => {
-  const doctorId = req.userId;
+  const userId = req.userId;
 
   try {
-    const doctor = await Doctor.findById(doctorId);
+    // let user = null;
+    const user = await Doctor.findById(userId);
 
-    if (!doctor) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Doctor not fund" });
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
     }
 
-    const { password, ...rest } = doctor._doc;
-    const appointments = await Bookings.find({ doctor: doctorId });
+    const appointments = await Bookings.find({ doctor: userId });
+
+    const { password, ...rest } = user._doc;
 
     res.status(200).json({
       success: true,
-      message: "Profile info is getting",
+      message: "Successfully ",
       data: { ...rest, appointments },
     });
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: "Something went wrong, cannot get" });
+      .json({ success: false, message: "Something went wrong! cannot get!" });
   }
 };
 

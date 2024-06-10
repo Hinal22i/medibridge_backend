@@ -9,14 +9,16 @@ const user = require("./routes/user");
 const doctor = require("./routes/doctor");
 const review = require("./routes/review");
 const cookieParser = require("cookie-parser");
+const booking = require("./routes/bookings");
 const corsOptions = {
-  origin: true, // For production, replace `true` with an array of allowed origins
+  origin: "http://localhost:5173", // Your frontend domain
+  credentials: true, // For production, replace `true` with an array of allowed origins
 };
 
 //middlewares
 app.use(express.json());
 app.use(cookieParser()); // Invoke the cookieParser
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 // Connect to the database
@@ -32,13 +34,14 @@ connectDB()
 const PORT = process.env.PORT || 8080;
 
 app.get("/", (req, res) => {
-  res.send("Welcome to my API");
+  res.send("Welcome to my final project");
 });
 
 app.use("/api/auth", auth);
 app.use("/api/users", user);
 app.use("/api/doctors", doctor);
 app.use("/api/reviews", review);
+app.use("/api/bookings", booking);
 
 app.listen(PORT, () => {
   console.log(`Listening on localhost:${PORT}`.rainbow);

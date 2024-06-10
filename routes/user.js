@@ -8,16 +8,26 @@ const {
   getUserProfile,
   getMyAppointments,
 } = require("../controllers/userController");
-
-const { authenticate, restrict } = require("../middleware/verifyToken");
+const {
+  authenticate,
+  restrict,
+  adminAuth,
+  doctorAuth,
+  patientAuth,
+} = require("../middleware/verifyToken");
 
 const router = express.Router();
 
-router.get("/:id", authenticate, restrict(["patient"]), getSingleUser);
-router.get("/", authenticate, restrict(["admin"]), getAllUsers);
-router.put("/:id", authenticate, restrict(["patient"]), updateUser);
-router.delete("/:id", authenticate, restrict(["patient"]), deleteUser);
-router.get("/profile/me", authenticate, restrict(["patient"]), getUserProfile);
+router.get("/", authenticate, adminAuth, getAllUsers);
+router.get("/:id", authenticate, patientAuth, getSingleUser);
+router.put("/:id", authenticate, patientAuth, updateUser);
+router.delete("/:id", authenticate, patientAuth, deleteUser);
+router.get(
+  "/profile/me",
+  authenticate,
+  restrict(["patient", "doctor", "admin"]),
+  getUserProfile
+);
 router.get(
   "/appointments/my-appointments",
   authenticate,
