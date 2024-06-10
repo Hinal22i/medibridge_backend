@@ -2,7 +2,7 @@ const Doctor = require("../schemas/Doctor");
 const Bookings = require("../schemas/Bookings");
 
 const updateDoctor = async (req, res) => {
-  const { id } = req.paras;
+  const { id } = req.params;
   try {
     const updateDoctor = await Doctor.findByIdAndUpdate(
       id,
